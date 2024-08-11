@@ -1,10 +1,12 @@
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 
 namespace CheatSplit
 {
     public partial class Form1 : Form
     {
+        private string? OriCheatFile { get; set; }
+
         public Form1()
         {
             InitializeComponent();
@@ -19,8 +21,8 @@ namespace CheatSplit
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                var file = dlg.FileName;
-                textBox1.Text = await File.ReadAllTextAsync(file, Encoding.UTF8);
+                OriCheatFile = dlg.FileName;
+                textBox1.Text = await File.ReadAllTextAsync(OriCheatFile, Encoding.UTF8);
             }
         }
 
@@ -32,9 +34,13 @@ namespace CheatSplit
             {
                 if (Regex.Match(textLine, @"^\{.*?\}$").Success || Regex.Match(textLine, @"^\[.*?\]$").Success) //cheat title
                 {
+                    var fileName = textLine.Substring(1, textLine.Length - 2);
+                    fileName = string.Join("_", fileName.Split(Path.GetInvalidPathChars()));
+                    fileName = string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
+
                     cheatFiles.Add(new CheatFile
                     {
-                        FileName = $"{textLine.Substring(1, textLine.Length - 2)}.txt"
+                        FileName = $"{fileName}/cheat/{Path.GetFileNameWithoutExtension(OriCheatFile)}.txt"
                     });
                 }
                 else //cheat codes
@@ -54,8 +60,20 @@ namespace CheatSplit
             if (saveFolderDialog.ShowDialog() == DialogResult.OK)
             {
                 var saveFolder = saveFolderDialog.SelectedPath;
+                foreach (var cheatFile in cheatFiles)
+                {
+                    var saveFile = Path.Combine(saveFolder, cheatFile.FileName);
 
+                    if (!Directory.Exists(Path.GetDirectoryName(saveFile)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(saveFile)!);
+                    if (File.Exists(saveFile))
+                        File.Delete(saveFile);
+
+                    await File.WriteAllLinesAsync(saveFile, cheatFile.Codes, Encoding.UTF8);
+                }
             }
+
+            MessageBox.Show("finish");
         }
 
         private class CheatFile

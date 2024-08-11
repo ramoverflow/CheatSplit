@@ -1,4 +1,4 @@
-namespace CheatSplit
+﻿namespace CheatSplit
 {
     internal static class Program
     {
