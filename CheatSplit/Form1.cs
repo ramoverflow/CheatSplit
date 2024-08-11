@@ -40,7 +40,7 @@ namespace CheatSplit
 
                     cheatFiles.Add(new CheatFile
                     {
-                        FileName = $"{fileName}/cheat/{Path.GetFileNameWithoutExtension(OriCheatFile)}.txt"
+                        FileName = $"{fileName}/cheats/{Path.GetFileNameWithoutExtension(OriCheatFile)}.txt"
                     });
                 }
                 else //cheat codes
