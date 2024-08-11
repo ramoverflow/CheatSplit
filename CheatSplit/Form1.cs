@@ -38,10 +38,13 @@ namespace CheatSplit
                     fileName = string.Join("_", fileName.Split(Path.GetInvalidPathChars()));
                     fileName = string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
 
-                    cheatFiles.Add(new CheatFile
+                    var cheatFile = new CheatFile
                     {
                         FileName = $"{fileName}/cheats/{Path.GetFileNameWithoutExtension(OriCheatFile)}.txt"
-                    });
+                    };
+                    cheatFile.Codes.Add($"[{fileName}]");
+
+                    cheatFiles.Add(cheatFile);
                 }
                 else //cheat codes
                 {
@@ -69,7 +72,7 @@ namespace CheatSplit
                     if (File.Exists(saveFile))
                         File.Delete(saveFile);
 
-                    await File.WriteAllLinesAsync(saveFile, cheatFile.Codes, Encoding.UTF8);
+                    await File.WriteAllLinesAsync(saveFile, cheatFile.Codes, new UTF8Encoding(false));
                 }
             }
 
